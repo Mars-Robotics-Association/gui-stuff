@@ -12,40 +12,44 @@ xVals = []
 yVals = []
 url = "https://api.isaacthoman.me/api/Gui" #This would be the URL of the robot's webserver
 
+series_id = dpg.generate_uuid()
 
 xVal=0;
 scanning = 1
+
+
 def bg_requests(name):
     while scanning==1:
         resp = requests.get(url)
         firstFix = ''.join(resp.text.split('"', 1))
         secondFix = ''.join(firstFix.split('"', 1))
         finalNumber = float(secondFix)
-        print(finalNumber)
-        time.sleep(5)
+
         global xVal
         global xVals
         global yVals
-        xVal+=1
+        xVal+=0.2
         xVals.append(xVal)
         yVals.append(finalNumber)
-        #would want to update the plot here, need to figure that out
+        print(finalNumber)
 
-
-
+       # dpg.set_item_label(test_id,'hey there')
+        dpg.set_value(series_id,[xVals,yVals])
+        time.sleep(1)
 
 
 with dpg.window(label="Test"):
-    with dpg.plot(label="Plot", height=500, width=500):
+    with dpg.plot(label="Plot", height=500, width=500) as test_id:
         dpg.add_plot_axis(dpg.mvXAxis, label="x")
         dpg.add_plot_axis(dpg.mvYAxis, label="y")
 
-        dpg.add_line_series(xVals, yVals, label="label", parent=dpg.last_item())
+        dpg.add_line_series(xVals, yVals, label="lineSeries1", parent=dpg.last_item(),id=series_id)
+
     dpg.plot
 
 x = threading.Thread(target=bg_requests, args=(1,))
 x.start()
 
-dpg.setup_viewport()
+#dpg.setup_viewport()
 dpg.start_dearpygui()
 scanning=0
