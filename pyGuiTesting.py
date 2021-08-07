@@ -28,18 +28,18 @@ def bg_requests(name):
         global xVal
         global xVals
         global yVals
-        xVal+=0.2
+        xVal+=0.5
         xVals.append(xVal)
         yVals.append(finalNumber)
         print(finalNumber)
 
        # dpg.set_item_label(test_id,'hey there')
         dpg.set_value(series_id,[xVals,yVals])
-        time.sleep(1)
+        time.sleep(0.1)
 
 
-with dpg.window(label="Test"):
-    with dpg.plot(label="Plot", height=500, width=500) as test_id:
+with dpg.window(label="Test", height=500, width=500):
+    with dpg.plot(label="Plot", height=-1, width=-1) as test_id:
         dpg.add_plot_axis(dpg.mvXAxis, label="x")
         dpg.add_plot_axis(dpg.mvYAxis, label="y")
 
