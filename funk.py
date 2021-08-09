@@ -2,6 +2,7 @@ import dearpygui.dearpygui as dpg
 import threading
 import time
 import requests
+import math
 me = dpg.generate_uuid()
 testLayer1 = dpg.generate_uuid()
 
@@ -11,30 +12,62 @@ requestGood = False
 xDir = 1
 yDir = 1
 
-
+carX = 300
+carY = 300
+width = 50
+height = 50
+angle = 20
+accelForward = 1
+accelRotation = -3
 
 def bg_requests(name):
     while 1==1:
-        global circleX
-        global circleY
-        global isWDown
-        global xDir
-        global yDir
+        global circleX, circleY, xDir, yDir, carX, carY, width, height, angle, accelForward, accelRotation
+        if dpg.is_key_down(87):
+            accelForward += 0.3
+        if dpg.is_key_down(83):
+            accelForward += -0.3
+        if dpg.is_key_down(65):
+            accelRotation += 0.3
+        if dpg.is_key_down(68):
+            accelRotation += -0.3
 
-        circleX+=xDir
-        circleY+=yDir
+        if accelForward > 0:
+            accelForward -= 0.1
+        if accelForward < 0:
+            accelForward += 0.1
+        if accelRotation > 0:
+            accelRotation -= 0.1
+        if accelRotation < 0:
+            accelRotation += 0.1
+
+        if accelForward > 5:
+            accelForward = 5
+        if accelForward < -5:
+            accelForward = -5
+        if accelRotation > 5:
+            accelRotation = 5
+        if accelRotation < -5:
+            accelRotation = -5
+
+        if math.fabs(accelForward) < 0.1:
+            accelForward = 0
+        if math.fabs(accelRotation) < 0.1:
+            accelRotation = 0
+
+        carX += math.sin(angle / 180 * 3.14) * accelForward
+        carY += math.cos(angle / 180 * 3.14) * accelForward
+        angle += accelRotation
 
         dpg.delete_item(testLayer1, children_only=True)
-        dpg.draw_circle([circleX, circleY], 50, thickness=10, color=(255, 0, 255),parent=testLayer1)
 
-        if (circleX > 800 - 50):
-            xDir = -1
-        if (circleY > 500 - 50):
-            yDir = -1
-        if (circleX < 50):
-            xDir = 1
-        if (circleY < 50):
-            yDir = 1
+        pointA = [math.sin((45 + angle) / 180 * 3.14) * width + carX, math.cos((45 + angle) / 180 * 3.14) * height + carY]
+        pointB = [math.sin((135 + angle) / 180 * 3.14) * width + carX, math.cos((135 + angle) / 180 * 3.14) * height + carY]
+        pointC = [math.sin((225 + angle) / 180 * 3.14) * width + carX, math.cos((225 + angle) / 180 * 3.14) * height + carY]
+        pointD = [math.sin((315 + angle) / 180 * 3.14) * width + carX, math.cos((315 + angle) / 180 * 3.14) * height + carY]
+
+        dpg.draw_rectangle([0, 0], [800, 500], parent=testLayer1, fill=(50, 50, 50))
+        dpg.draw_polygon([pointA, pointB, pointC, pointD, pointA], parent=testLayer1, fill=(255, 0, 255))
 
 
         time.sleep(0.01)
