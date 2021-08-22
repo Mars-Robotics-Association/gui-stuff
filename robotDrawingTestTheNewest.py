@@ -11,7 +11,7 @@ polyPointsX = [0,0,50,50]
 polyPointsY = [0,50,50,0]
 
 robotWidth = 100
-robotHeight = 100
+robotHeight = 150
 
 givenCenter = [250,250]
 givenRotation = 45
@@ -21,19 +21,19 @@ givenRotation = 45
 def move_polygon(sender, app_data, user_data):
     while(1==1):
         global polyPointsX,polyPointsY,givenCenter,givenRotation
-        givenRotation+=1
+        givenRotation+=0.1
 
-        firstX = givenCenter[0] + math.sqrt(0.5 * robotWidth ** 2 + 0.5 * robotHeight ** 2) * math.cos(225 + givenRotation * math.pi / 180)
-        firstY = givenCenter[1] + math.sqrt(0.5 * robotWidth ** 2 + 0.5 * robotHeight ** 2) * math.sin(225 + givenRotation * math.pi / 180)
+        firstX = givenCenter[0]
+        firstY = givenCenter[1]
 
-        secondX = firstX + robotHeight * math.cos(givenRotation * math.pi / 180)
-        secondY = firstY + robotHeight * math.sin(givenRotation * math.pi / 180)
+        secondX = firstX + robotHeight * math.cos(givenRotation+90 * math.pi / 180)
+        secondY = firstY + robotHeight * math.sin(givenRotation+90 * math.pi / 180)
 
-        thirdX = secondX + robotWidth * math.cos(givenRotation+90 * math.pi / 180)
-        thirdY = secondY + robotWidth * math.sin(givenRotation+90 * math.pi / 180)
+        thirdX = secondX + robotWidth * math.cos(givenRotation+180 * math.pi / 180)
+        thirdY = secondY + robotWidth * math.sin(givenRotation+180 * math.pi / 180)
 
-        fourthX = thirdX + robotWidth * math.cos(givenRotation + 90 * math.pi / 180)
-        fourthY = thirdY + robotWidth * math.sin(givenRotation + 90 * math.pi / 180)
+        fourthX = thirdX + robotHeight * math.cos(givenRotation + 270 * math.pi / 180)
+        fourthY = thirdY + robotHeight * math.sin(givenRotation + 270 * math.pi / 180)
 
         #x + distance * math.cos(angle_degrees * math.pi / 180)
 
