@@ -1,11 +1,12 @@
+import dearpygui.dearpygui as dpg
 import threading
 import asyncio
 import websockets
 import logging
 import json
 import signal
-import dearpygui.dearpygui as dpg
-series_id = dpg.generate_uuid()
+myCircle = dpg.generate_uuid()
+me = dpg.generate_uuid()
 
 class RobotPosition:
     def __init__(self):
@@ -17,19 +18,28 @@ class RobotPosition:
         with self._lock:
             self.xx = newx
             self.yy = newy
-            dpg.set_value(series_id, newy)
+            dpg.delete_item(me, children_only=True)
+            dpg.draw_circle([150, 150], 50, thickness=10, color=(255, 0, 255), parent=me, id=myCircle)
 
 
 
 rp = RobotPosition()
 loop = asyncio.new_event_loop()
 
+def testFunction():
+    print('hey!')
+
+with dpg.window(label="Window", height=750, width=850):
+    with dpg.drawlist(width=800, height=500,id=me, callback=testFunction):
+        newCircle = dpg.draw_circle([150, 150], 50, thickness=10, color=(255,0,255), id=myCircle,label="myCircle")
+        dpg.configure_item(newCircle, center=[150,450])
 
 
 async def consumer_handler(websocket) -> None:
     async for message in websocket:
         data = json.loads(message)
-        rp.update(data['xx'], data['yy'])
+        print(data)
+        #rp.update(data['xx'], data['yy'])
 
 
 async def consume(hostname: str, port: int) -> None:
@@ -41,14 +51,12 @@ async def consume(hostname: str, port: int) -> None:
             pass
 
 
-
-
 def tfunc():
     # logger = logging.getLogger('websockets')
     # logger.setLevel(logging.DEBUG)
     # logger.addHandler(logging.StreamHandler())
     asyncio.set_event_loop(loop)
-    loop.run_until_complete(consume(hostname="192.168.43.1", port=8000))
+    loop.run_until_complete(consume(hostname="192.168.43.154", port=8000))
     loop.close()
 
 
@@ -56,14 +64,9 @@ x = threading.Thread(target=tfunc)
 x.daemon = True
 x.start()
 
-with dpg.window(label="Test", height=500, width=500):
-    dpg.add_text("No Requests Yet", id=series_id)
-
-dpg.setup_viewport()
-dpg.start_dearpygui()
+#dpg.start_dearpygui()
 
 print("EXITED DEAR PY GUI")
-
 try:
     for task in asyncio.all_tasks(loop):
         task.cancel()

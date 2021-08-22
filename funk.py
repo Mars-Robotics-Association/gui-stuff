@@ -20,6 +20,14 @@ angle = 20
 accelForward = 1
 accelRotation = -3
 
+elementX = [50]
+elementY = [50]
+elementWidth = [20]
+elementHeight = [30]
+elementAngle = [45]
+elementAccelForward = [0]
+elementAccelRotation = [5]
+
 def bg_requests(name):
     while 1==1:
         global circleX, circleY, xDir, yDir, carX, carY, width, height, angle, accelForward, accelRotation
@@ -69,6 +77,17 @@ def bg_requests(name):
         dpg.draw_rectangle([0, 0], [800, 500], parent=testLayer1, fill=(50, 50, 50))
         dpg.draw_polygon([pointA, pointB, pointC, pointD, pointA], parent=testLayer1, fill=(255, 0, 255))
 
+        for i in range(len(elementX)):
+
+            pointAE = [math.sin((45 + elementAngle[i]) / 180 * 3.14) * elementWidth[i] + elementX[i],
+                       math.cos((45 + elementAngle[i]) / 180 * 3.14) * elementHeight[i] + elementY[i]]
+            pointBE = [math.sin((135 + elementAngle[i]) / 180 * 3.14) * elementWidth[i] + elementX[i],
+                       math.cos((135 + elementAngle[i]) / 180 * 3.14) * elementHeight[i] + elementY[i]]
+            pointCE = [math.sin((225 + elementAngle[i]) / 180 * 3.14) * elementWidth[i] + elementX[i],
+                       math.cos((225 + elementAngle[i]) / 180 * 3.14) * elementHeight[i] + elementY[i]]
+            pointDE = [math.sin((315 + elementAngle[i]) / 180 * 3.14) * elementWidth[i] + elementX[i],
+                       math.cos((315 + elementAngle[i]) / 180 * 3.14) * elementHeight[i] + elementY[i]]
+            dpg.draw_polygon([pointAE, pointBE, pointCE, pointDE, pointAE], parent=testLayer1, fill=(219, 219, 72))
 
         time.sleep(0.01)
 
