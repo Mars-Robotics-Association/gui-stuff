@@ -12,16 +12,20 @@ polyPointsY = [0,50,50,0]
 
 robotWidth = 100
 robotHeight = 120
-
 givenCenter = [250,250]
 givenRotation = 45
-
-
+demoRadius = 200
+demoRadiusChange = 1
 
 def move_polygon(sender, app_data, user_data):
     while(1==1):
-        global polyPointsX,polyPointsY,givenCenter,givenRotation
+        global polyPointsX,polyPointsY,givenCenter,givenRotation,demoRadius,demoRadiusChange
         givenRotation+=2
+
+        givenCenter[0] = 700 / 2 + demoRadius * math.cos(givenRotation * math.pi / 180)
+        givenCenter[1] = 700 / 2 + demoRadius * math.sin(givenRotation * math.pi / 180)
+
+        givenCenter
         xVals = []
         yVals = []
 
