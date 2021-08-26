@@ -84,7 +84,7 @@ async def consumer_handler(websocket) -> None:
     async for message in websocket:
         data = json.loads(message)
         #rp.update(data['xx'], data['yy'])
-        print(data)
+        print(data['img'])
         move_polygon(data['xx']*700,data['yy']*700,data['hh']*700)
 
 async def consume(hostname: str, port: int) -> None:
