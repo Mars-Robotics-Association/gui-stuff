@@ -1,3 +1,4 @@
+import base64
 import time
 from dearpygui.dearpygui import *
 from random import seed
@@ -47,9 +48,9 @@ def move_polygon(givenCenterX, givenCenterY, givenRotation):
 
 
 
-
-with window(label="Tutorial", width=800, height=800):
-    add_button(label="Move Circle")
+#board drawing stuff
+with window(label="Game Field", pos=(10, 10)):
+    #add_button(label="Move Circle")
     with drawlist(label="Drawing_1", width=700, height=700,id="drawlist"):
 
         draw_rectangle((0,0),(700,700),fill=(150,150,150))
@@ -63,19 +64,31 @@ with window(label="Tutorial", width=800, height=800):
                 draw_line((0,squareLength*xLine),(squareLength*6,squareLength*xLine),color=(100,100,100))
         draw_polygon(label="Drawing_2", points=((50,50),(50,100),(100,100),(100,50),(50,50)),  fill=[100, 255, 120], id="this_polygon")
 
-class RobotPosition:
-    def __init__(self):
-        self.xx = 0
-        self.yy = 0
-        self._lock = threading.Lock()
+#image stuff
+image_id = 0
+defaultImg = b'iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAIAAACRXR/mAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIASURBVFhH7dVfSFNhHMbxV/TGZATBIrbhYIqUYYUQg8Cgm0hQvBBZsE0KMhKiES0kCCG2iHXoz8XUy7roRkTF3QxBFDwg3SUSBG1RKCLRKMhEzIsj7X0gG4b83vd3QOT93p3nvJx9Ls424RzIDIuSYVEyLEqGRelQs9bWVovFYun7T1xrp87aWi/dvXPD6/GIf2s8e34yb+OQaoqskXQCiv/kawrjqFKKrDPeKvnxRzz+m7f6LevZ41Sqp+OyHGU13pM4TU+R1dZ0LHTuUmH1B6531X7hFFxCDDx/g5UYzytfUaAWLFHtx0TMFdbcWBYsIZZ/YyTlCsvZ/AKUELmFjxgpucNytoASYnz+PTZK7rB+fQJKCPvDHl+LfXOFNT8+DJRQfL4rrNBRmILhTkzE+FkXW0JACbG4soGVGANr/evn7q6OSORqa2szOOUGhyZwgh4D6378CiB/q8nZ73BbKQbWg2ud0nKi/nQqY82+XcINjRhY6UREsqL3nmLSjoGVScbASmYwacfAsgZ6Javv4UtM2jGwso9uS1YiPYJJOwbW1OsnkpUdncakHQPLjQ4v69tKse96LBqPzXD8YskYWMflm1UOk3YMD4KoXEHxr7kyBlYdSH/axqYbA8vOjzYEff6Af/DFK0zasb0NvBkWJcOiZFiUDIuSYVE6kCzH2QE4mt54WH8TYQAAAABJRU5ErkJggg=='
+imageID = generate_uuid()
 
-    def update(self, newx, newy):
-        with self._lock:
-            self.xx = newx
-            self.yy = newy
+def baseToImage(imgData):
+    global image_id
+    with open("imageToSave.png", "wb") as fh:
+        fh.write(base64.decodebytes(defaultImg))
+
+    width, height, channels, data = load_image('imageToSave.png') # 0: width, 1: height, 2: channels, 3: data
+
+    with texture_registry():
+        return add_static_texture(width, height, data)
 
 
-rp = RobotPosition()
+with window(label="Image feed",pos=(735, 10)):
+
+    with drawlist(width=600, height=600):
+        newImg = baseToImage(defaultImg)
+        draw_image(newImg, (0, 0), (600, 600),id="imageID")
+
+
+
+
 loop = asyncio.new_event_loop()
 
 
@@ -85,6 +98,9 @@ async def consumer_handler(websocket) -> None:
         data = json.loads(message)
         #rp.update(data['xx'], data['yy'])
         print(data['img'])
+        recievedImg = baseToImage(data['img']);
+        configure_item(item=get_alias_id("imageID"),texture_id=recievedImg)
+
         move_polygon(data['xx']*700,data['yy']*700,data['hh']*700)
 
 async def consume(hostname: str, port: int) -> None:
