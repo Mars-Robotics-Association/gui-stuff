@@ -31,7 +31,7 @@ def move_polygon(givenCenterX, givenCenterY, givenRotation):
 
     xVals.append(givenCenterX + ((robotWidth / 2) * math.cos(givenRotation*3.14/180)) - ((robotHeight / 2) * math.sin(givenRotation*3.14/180)))
     yVals.append(givenCenterY + ((robotWidth / 2) * math.sin(givenRotation*3.14/180)) + ((robotHeight / 2) * math.cos(givenRotation*3.14/180)))
-
+    
     xVals.append(givenCenterX - ((robotWidth / 2) * math.cos(givenRotation*3.14/180)) - ((robotHeight / 2) * math.sin(givenRotation*3.14/180)))
     yVals.append(givenCenterY - ((robotWidth / 2) * math.sin(givenRotation*3.14/180)) + ((robotHeight / 2) * math.cos(givenRotation*3.14/180)))
 
@@ -67,12 +67,13 @@ with window(label="Game Field", pos=(10, 10)):
 #image stuff
 image_id = 0
 defaultImg = b'iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAIAAACRXR/mAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIASURBVFhH7dVfSFNhHMbxV/TGZATBIrbhYIqUYYUQg8Cgm0hQvBBZsE0KMhKiES0kCCG2iHXoz8XUy7roRkTF3QxBFDwg3SUSBG1RKCLRKMhEzIsj7X0gG4b83vd3QOT93p3nvJx9Ls424RzIDIuSYVEyLEqGRelQs9bWVovFYun7T1xrp87aWi/dvXPD6/GIf2s8e34yb+OQaoqskXQCiv/kawrjqFKKrDPeKvnxRzz+m7f6LevZ41Sqp+OyHGU13pM4TU+R1dZ0LHTuUmH1B6531X7hFFxCDDx/g5UYzytfUaAWLFHtx0TMFdbcWBYsIZZ/YyTlCsvZ/AKUELmFjxgpucNytoASYnz+PTZK7rB+fQJKCPvDHl+LfXOFNT8+DJRQfL4rrNBRmILhTkzE+FkXW0JACbG4soGVGANr/evn7q6OSORqa2szOOUGhyZwgh4D6378CiB/q8nZ73BbKQbWg2ud0nKi/nQqY82+XcINjRhY6UREsqL3nmLSjoGVScbASmYwacfAsgZ6Javv4UtM2jGwso9uS1YiPYJJOwbW1OsnkpUdncakHQPLjQ4v69tKse96LBqPzXD8YskYWMflm1UOk3YMD4KoXEHxr7kyBlYdSH/axqYbA8vOjzYEff6Af/DFK0zasb0NvBkWJcOiZFiUDIuSYVE6kCzH2QE4mt54WH8TYQAAAABJRU5ErkJggg=='
+helloImg = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADRSURBVEhL7ZHRDYMwDEQZgREYgREySjZmFEagT7roakhopKqVWinvgx62L+fQ6fgyI6DLCOgyArr8akBKaV3X8nLm0nr/BtN0642txlDOuaiK2IqnsDWvoN1jq6g7JwbbYJ5na4/t+06R1rIsKp7G9NN0gnRdAVt4btumoruESZycRhVW4xSuz1MVcBekXdE9pM11Ooq4mqkDOBTBcDSC9HPal9LWiHiW/6RYtAVwgTQzjU9Ug4FRYXM89A6GtSK8CvgII6DLCOgyArr8e8BxPADpehgpJaleKAAAAABJRU5ErkJggg=='
 imageID = generate_uuid()
 
 def baseToImage(imgData):
     global image_id
     with open("imageToSave.png", "wb") as fh:
-        fh.write(base64.decodebytes(defaultImg))
+        fh.write(base64.decodebytes(imgData))
 
     width, height, channels, data = load_image('imageToSave.png') # 0: width, 1: height, 2: channels, 3: data
 
@@ -84,8 +85,9 @@ with window(label="Image feed",pos=(735, 10)):
 
     with drawlist(width=600, height=600):
         newImg = baseToImage(defaultImg)
-        draw_image(newImg, (0, 0), (600, 600),id="imageID")
-
+        newImg2 = baseToImage(helloImg)
+        draw_image(newImg2, (0, 0), (600, 600),id='imageID')
+        #configure_item(item=get_alias_id('imageID'), texture_id=newImg)
 
 
 
@@ -99,7 +101,7 @@ async def consumer_handler(websocket) -> None:
         #rp.update(data['xx'], data['yy'])
         print(data['img'])
         recievedImg = baseToImage(data['img']);
-        configure_item(item=get_alias_id("imageID"),texture_id=recievedImg)
+        #configure_item(item=get_alias_id("imageID"),texture_id=recievedImg)
 
         move_polygon(data['xx']*700,data['yy']*700,data['hh']*700)
 
