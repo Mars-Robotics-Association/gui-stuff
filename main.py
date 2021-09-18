@@ -4,6 +4,16 @@ from dearpygui.dearpygui import *
 from random import seed
 import math
 import threading,asyncio,websockets,json
+from dearpygui.dearpygui import *
+import threading
+import asyncio
+import websockets
+import logging
+import json
+import signal
+import base64
+from PIL import Image
+from io import BytesIO
 
 seed(1)
 circle_pos = [50,50]
@@ -99,15 +109,33 @@ loop = asyncio.new_event_loop()
 async def consumer_handler(websocket) -> None:
     async for message in websocket:
         data = json.loads(message)
-        #rp.update(data['xx'], data['yy'])
-        print(bytes(data['img'], 'ascii'))
-        newImg3 = baseToImage(bytes(data['img'], 'ascii'))
+        if 'img' in data:
+            #rp.update(data['xx'], data['yy'])
+            print(bytes(data['img'], 'ascii'))
+            newImg3 = baseToImage(bytes(data['img'], 'ascii'))
+            #configure_item(imageID, texture_id=newImg3)
+            delete_item(imageDrawList, children_only=True)
+            draw_image(newImg3, (0, 0), (600, 600), parent=imageDrawList)
 
-        delete_item(imageDrawList, children_only=True)
-        draw_image(newImg3, (0, 0), (600, 600), parent=imageDrawList)
+        if 'encodedImage' in data:
+            imgstr = data['encodedImage']
+            # rp.update(data['xx'], data['yy'])
+            im = Image.open(BytesIO(base64.b64decode(imgstr))).convert('RGBA')
+            width, height = im.size
+            pixels = list(im.getdata())
+            loadofpixels = []
+            for pp in pixels:
+                loadofpixels.append(pp[0] / 255)
+                loadofpixels.append(pp[1] / 255)
+                loadofpixels.append(pp[2] / 255)
+                loadofpixels.append(pp[3] / 255)
 
+            with texture_registry():
+                delete_item(imageDrawList, children_only=True)
+                draw_image(add_static_texture(width, height, loadofpixels), (0, 0), (600, 600), parent=imageDrawList)
 
-        move_polygon(data['xx']*700,data['yy']*700,data['hh']*700)
+        if 'xx' in data:
+            move_polygon(data['xx']*700,data['yy']*700,data['hh']*700)
 
 async def consume(hostname: str, port: int) -> None:
     websocket_resource_url = f"ws://{hostname}:{port}"
@@ -123,7 +151,7 @@ def tfunc():
     # logger.setLevel(logging.DEBUG)
     # logger.addHandler(logging.StreamHandler())
     asyncio.set_event_loop(loop)
-    loop.run_until_complete(consume(hostname="192.168.43.1", port=8001))
+    loop.run_until_complete(consume(hostname="192.168.49.1", port=8001))
     loop.close()
 
 
