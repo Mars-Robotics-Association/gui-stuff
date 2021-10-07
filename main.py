@@ -109,6 +109,7 @@ loop = asyncio.new_event_loop()
 async def consumer_handler(websocket) -> None:
     async for message in websocket:
         data = json.loads(message)
+        print(data)
         if 'img' in data:
             #rp.update(data['xx'], data['yy'])
             print(bytes(data['img'], 'ascii'))
