@@ -80,6 +80,7 @@ defaultImg = b'iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAIAAACRXR/mAAAAAXNSR0IArs4c6QAAA
 helloImg = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADRSURBVEhL7ZHRDYMwDEQZgREYgREySjZmFEagT7roakhopKqVWinvgx62L+fQ6fgyI6DLCOgyArr8akBKaV3X8nLm0nr/BtN0642txlDOuaiK2IqnsDWvoN1jq6g7JwbbYJ5na4/t+06R1rIsKp7G9NN0gnRdAVt4btumoruESZycRhVW4xSuz1MVcBekXdE9pM11Ooq4mqkDOBTBcDSC9HPal9LWiHiW/6RYtAVwgTQzjU9Ug4FRYXM89A6GtSK8CvgII6DLCOgyArr8e8BxPADpehgpJaleKAAAAABJRU5ErkJggg=='
 imageID = generate_uuid()
 imageDrawList = generate_uuid()
+confDisplay = generate_uuid()
 
 def baseToImage(imgData):
     global image_id
@@ -98,7 +99,7 @@ with window(label="Image feed",pos=(735, 10)):
         newImg = baseToImage(defaultImg)
         newImg2 = baseToImage(helloImg)
         draw_image(newImg, (0, 0), (600, 600),id=imageID)
-
+    add_text("hello!",color=(255,0,255), id=confDisplay);
 
 
 
@@ -109,7 +110,9 @@ loop = asyncio.new_event_loop()
 async def consumer_handler(websocket) -> None:
     async for message in websocket:
         data = json.loads(message)
-        print(data)
+
+        if'confidence' in data:
+            configure_item(confDisplay, default_value= data['confidence'])
         if 'img' in data:
             #rp.update(data['xx'], data['yy'])
             print(bytes(data['img'], 'ascii'))
